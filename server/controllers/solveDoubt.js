@@ -87,7 +87,7 @@ Remember: Your goal is to help users learn and understand DSA concepts through t
       res.status(201).json({
         message: response.text,
       });
-      console.log(response.text);
+      // console.log(response.text);
     }
 
     main();

@@ -20,7 +20,7 @@ const submitCode = async (req,res)=>{
       if(language==='cpp')
         language='c++'
       
-      console.log(language);
+      // console.log(language);
       
     //    Fetch the problem from database
        const problem =  await Problem.findById(problemId);

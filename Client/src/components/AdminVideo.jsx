@@ -33,7 +33,7 @@ const AdminVideo = () => {
       setProblems(problems.filter(problem => problem._id !== id));
     } catch (err) {
       setError(err);
-      console.log(err);
+      // console.log(err);
     }
   };
 
