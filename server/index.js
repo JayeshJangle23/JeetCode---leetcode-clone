@@ -23,7 +23,7 @@ const projectRoot = path.resolve();
 
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: "https://jeetcode-3qnq.onrender.com",
     credentials: true,
   })
 );
