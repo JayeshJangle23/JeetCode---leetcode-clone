@@ -1,16 +1,16 @@
 import {Routes, Route ,Navigate} from "react-router";
-import Login from "./pages/Login";
-import Signup from "./pages/Signup";
-import Homepage from "./pages/Homepage";
+import Login from "./pages/Login.jsx";
+import Signup from "./pages/SignUp.jsx";
+import Homepage from "./pages/Homepage.jsx";
 import { useDispatch, useSelector } from 'react-redux';
 import { checkAuth } from "./authslice";
 import { useEffect } from "react";
-import AdminPanel from "./components/AdminPanel";
-import ProblemPage from "./pages/ProblemPage"
-import Admin from "./pages/Admin";
-import AdminVideo from "./components/AdminVideo"
-import AdminDelete from "./components/AdminDelete"
-import AdminUpload from "./components/AdminUpload"
+import AdminPanel from "./components/AdminPanel.jsx";
+import ProblemPage from "./pages/ProblemPage.jsx"
+import Admin from "./pages/Admin.jsx";
+import AdminVideo from "./components/AdminVideo.jsx"
+import AdminDelete from "./components/AdminDelete.jsx"
+import AdminUpload from "./components/AdminUpload.jsx"
 
 function App(){
   
