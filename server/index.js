@@ -23,7 +23,8 @@ const projectRoot = path.resolve();
 
 app.use(
   cors({
-    origin: "https://jeetcode-3qnq.onrender.com",
+    // origin: "https://jeetcode-3qnq.onrender.com",
+    origin : "https://jeet-code-leetcode-clone.vercel.app",
     credentials: true,
   })
 );
