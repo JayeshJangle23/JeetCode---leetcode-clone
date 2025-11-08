@@ -18,8 +18,7 @@ const videoRouter = require("./routes/videoCreater");
 const cors = require("cors");
 const path = require("path");
 
-// const _dirname = path.resolve(); 
-const projectRoot = path.resolve();
+// const projectRoot = path.resolve();
 
 app.use(
   cors({
@@ -39,16 +38,11 @@ app.use("/ai", aiRouter);
 app.use("/video",videoRouter);
 
 
-// app.use(express.static(path.join(_dirname,"/client/dist")));
-app.use(express.static(path.join(projectRoot, "/client/dist")));
-// app.use("*",(req,res) => {
-//   console.log("1212");
-//   res.sendFile(path.resolve(_dirname,"client","dist","index.html"));
-// })
-app.get(/\/(.*)/, (req, res) => {
-  console.log("Catch-all route triggered for:", req.path);
-  res.sendFile(path.join(projectRoot, "client", "dist", "index.html"));
-});
+// app.use(express.static(path.join(projectRoot, "/client/dist")));
+// app.get(/\/(.*)/, (req, res) => {
+//   console.log("Catch-all route triggered for:", req.path);
+//   res.sendFile(path.join(projectRoot, "client", "dist", "index.html"));
+// });
 
 
 
