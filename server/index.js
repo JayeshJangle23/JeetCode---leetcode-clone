@@ -44,7 +44,9 @@ app.use("/video",videoRouter);
 //   res.sendFile(path.join(projectRoot, "client", "dist", "index.html"));
 // });
 
-
+app.get("/", (req, res) => {
+  res.send("✅ Backend is live and running successfully!");
+});
 
 
 const InitalizeConnection = async () => {
