@@ -1,6 +1,5 @@
 require("dotenv").config();
 const express = require("express");
-const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const path = require("path");
 
@@ -14,41 +13,51 @@ const videoRouter = require("./routes/videoCreater");
 
 const app = express();
 
-// ✅ Step 1: Define allowed origins
-const allowedOrigins = [
-  "https://jeet-code-leetcode-clone.vercel.app", // your frontend on Vercel
-  "http://localhost:5173", // local dev
-];
+// ✅ Step 1: Dynamic CORS Middleware (no need to edit for each deploy)
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
 
-// ✅ Step 2: CORS middleware (place BEFORE all routes)
-app.use(
-  cors({
-    origin: [
-      "https://jeet-code-leetcode-clone.vercel.app",
-      "https://jeet-code-leetcode-clone-1kt4heijh-jayeshjangle23s-projects.vercel.app", // ✅ new vercel URL
-      "http://localhost:5173"
-    ],
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    credentials: true,
-  })
-);
+  // Allowed base origins (permanent)
+  const allowedOrigins = [
+    "http://localhost:5173",
+    "https://jeet-code-leetcode-clone.vercel.app",
+  ];
+
+  // ✅ Allow any *.vercel.app subdomain automatically
+  if (
+    origin &&
+    (origin.endsWith(".vercel.app") || allowedOrigins.includes(origin))
+  ) {
+    res.header("Access-Control-Allow-Origin", origin);
+  }
+
+  res.header("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
+  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  res.header("Access-Control-Allow-Credentials", "true");
+
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(200);
+  }
+
+  next();
+});
 
 app.use(express.json());
 app.use(cookieParser());
 
-// ✅ Step 3: Routers
+// ✅ Step 2: Routers
 app.use("/user", authRouter);
 app.use("/problem", problemRouter);
 app.use("/submission", submitRouter);
 app.use("/ai", aiRouter);
 app.use("/video", videoRouter);
 
-// ✅ Step 4: Root test route
+// ✅ Step 3: Root test route
 app.get("/", (req, res) => {
-  res.send("✅ Backend is live and running successfully with proper CORS!");
+  res.send("✅ Backend is live and running successfully with dynamic CORS!");
 });
 
-// ✅ Step 5: Initialize
+// ✅ Step 4: Initialize Database + Redis + Server
 const InitializeConnection = async () => {
   try {
     await main();
