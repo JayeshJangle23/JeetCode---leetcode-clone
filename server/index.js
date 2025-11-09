@@ -11,16 +11,16 @@ const videoRouter = require("./routes/videoCreater");
 
 const app = express();
 
-/* ✅ Step 1: Custom CORS middleware that handles ALL requests (including OPTIONS) */
+// ✅ Universal CORS Middleware
 app.use((req, res, next) => {
   const origin = req.headers.origin;
 
-  // Allow localhost and any vercel.app frontend
   const allowedOrigins = [
     "http://localhost:5173",
     "https://jeet-code-leetcode-clone.vercel.app",
   ];
 
+  // ✅ Allow all Vercel preview URLs automatically
   if (
     origin &&
     (origin.endsWith(".vercel.app") || allowedOrigins.includes(origin))
@@ -38,7 +38,6 @@ app.use((req, res, next) => {
   );
   res.setHeader("Access-Control-Allow-Credentials", "true");
 
-  // ✅ Important: Send 200 immediately for preflight requests
   if (req.method === "OPTIONS") {
     return res.sendStatus(200);
   }
@@ -49,28 +48,24 @@ app.use((req, res, next) => {
 app.use(express.json());
 app.use(cookieParser());
 
-/* ✅ Step 2: API Routes */
+// ✅ Routes
 app.use("/user", authRouter);
 app.use("/problem", problemRouter);
 app.use("/submission", submitRouter);
 app.use("/ai", aiRouter);
 app.use("/video", videoRouter);
 
-/* ✅ Step 3: Health Check Route */
 app.get("/", (req, res) => {
-  res.send("✅ Backend is live and running with full CORS support!");
+  res.send("✅ Backend running fine with CORS!");
 });
 
-/* ✅ Step 4: Initialize server */
 const InitializeConnection = async () => {
   try {
     await main();
     console.log("✅ MongoDB connected");
     await redisClient.connect();
     const PORT = process.env.PORT || 3000;
-    app.listen(PORT, () => {
-      console.log(`🚀 Server running on port ${PORT}`);
-    });
+    app.listen(PORT, () => console.log(`🚀 Server running on ${PORT}`));
   } catch (err) {
     console.error("❌ Initialization failed:", err);
     process.exit(1);
