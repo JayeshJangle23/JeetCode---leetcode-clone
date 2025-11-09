@@ -4,60 +4,65 @@ const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const path = require("path");
 
-const app = express();
-
+const main = require("./config/db");
+const redisClient = require("./config/redis");
 const authRouter = require("./routes/userAuth");
 const problemRouter = require("./routes/problemCreator");
 const submitRouter = require("./routes/submit");
 const aiRouter = require("./routes/aiChatting");
 const videoRouter = require("./routes/videoCreater");
 
-const main = require("./config/db");
-const redisClient = require("./config/redis");
+const app = express();
 
-// ✅ Use proper CORS configuration
-app.use(
-  cors({
-    origin: [
-      "https://jeet-code-leetcode-clone.vercel.app", // your Vercel frontend
-      "http://localhost:5173", // local dev
-    ],
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: true,
-  })
-);
+// ✅ Step 1: Define allowed origins
+const allowedOrigins = [
+  "https://jeet-code-leetcode-clone.vercel.app", // your frontend on Vercel
+  "http://localhost:5173", // local dev
+];
 
-// ✅ Handle preflight requests (important!)
-app.options("*", cors());
+// ✅ Step 2: CORS middleware (place BEFORE all routes)
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  if (allowedOrigins.includes(origin)) {
+    res.setHeader("Access-Control-Allow-Origin", origin);
+  }
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  res.setHeader("Access-Control-Allow-Credentials", "true");
+
+  // ✅ Respond immediately to preflight (OPTIONS) requests
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(200);
+  }
+  next();
+});
 
 app.use(express.json());
 app.use(cookieParser());
 
-// ✅ Routes
+// ✅ Step 3: Routers
 app.use("/user", authRouter);
 app.use("/problem", problemRouter);
 app.use("/submission", submitRouter);
 app.use("/ai", aiRouter);
 app.use("/video", videoRouter);
 
-// ✅ Default route
+// ✅ Step 4: Root test route
 app.get("/", (req, res) => {
-  res.send("✅ Backend is live and running successfully!");
+  res.send("✅ Backend is live and running successfully with proper CORS!");
 });
 
-// ✅ Connect DB + start server
+// ✅ Step 5: Initialize
 const InitializeConnection = async () => {
   try {
     await main();
-    console.log("✅ Database connection established");
+    console.log("✅ Database connected");
     await redisClient.connect();
     app.listen(process.env.PORT || 3000, () => {
       console.log(`🚀 Server running on port ${process.env.PORT || 3000}`);
     });
   } catch (err) {
-    console.error("❌ Server initialization failed:", err.message);
-    process.exit(1);
+    console.error("❌ Server initialization failed:", err);
   }
 };
 
