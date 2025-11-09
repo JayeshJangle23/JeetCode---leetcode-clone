@@ -1,71 +1,81 @@
 require("dotenv").config();
 const express = require("express");
 const app = express();
-
-// Set environment variables directly if not loaded
-if (!process.env.PORT) {
-  process.env.PORT = "3000";
-}
+const cors = require("cors");
+const path = require("path");
+const cookieParser = require("cookie-parser");
 
 const main = require("./config/db");
-const cookieParser = require("cookie-parser");
-const authRouter = require("./routes/userAuth");
 const redisClient = require("./config/redis");
+
+const authRouter = require("./routes/userAuth");
 const problemRouter = require("./routes/problemCreator");
 const submitRouter = require("./routes/submit");
 const aiRouter = require("./routes/aiChatting");
 const videoRouter = require("./routes/videoCreater");
-const cors = require("cors");
-const path = require("path");
 
-// const projectRoot = path.resolve();
+// Set default port if not defined
+const PORT = process.env.PORT || 3000;
+
+// ✅ CORS Configuration (Render + Vercel Friendly)
+const allowedOrigins = [
+  "https://jeet-code-leetcode-clone.vercel.app", // Frontend (Vercel)
+  "http://localhost:5173", // Local development
+];
 
 app.use(
   cors({
-    // origin: "https://jeetcode-3qnq.onrender.com",
-    origin : ["https://jeet-code-leetcode-clone.vercel.app","http://localhost:5173"],
-    methods: ["GET", "POST", "PUT", "DELETE"],
+    origin: function (origin, callback) {
+      // Allow requests with no origin (like Postman)
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      } else {
+        console.log("❌ Blocked by CORS:", origin);
+        return callback(new Error("Not allowed by CORS"), false);
+      }
+    },
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
   })
 );
 
-app.use(express.json());
-app.use(cookieParser());
+// ✅ Must be BEFORE routes
 app.options("*", cors());
 
+// ✅ Middlewares
+app.use(express.json());
+app.use(cookieParser());
+
+// ✅ API Routes
 app.use("/user", authRouter);
 app.use("/problem", problemRouter);
 app.use("/submission", submitRouter);
 app.use("/ai", aiRouter);
-app.use("/video",videoRouter);
+app.use("/video", videoRouter);
 
-
-// app.use(express.static(path.join(projectRoot, "/client/dist")));
-// app.get(/\/(.*)/, (req, res) => {
-//   console.log("Catch-all route triggered for:", req.path);
-//   res.sendFile(path.join(projectRoot, "client", "dist", "index.html"));
-// });
-
+// ✅ Simple health check route
 app.get("/", (req, res) => {
   res.send("✅ Backend is live and running successfully!");
 });
 
-
-const InitalizeConnection = async () => {
+// ✅ Initialize database + Redis + start server
+const initializeConnection = async () => {
   try {
-    await main(); // Only connect to MongoDB for now
+    await main();
     console.log("✅ Database connection established");
+
     await redisClient.connect();
-    app.listen(process.env.PORT || 3000, () => {
-      console.log(
-        "🚀 Server listening at port number: " + (process.env.PORT || 3000)
-      );
+
+    app.listen(PORT, () => {
+      console.log(`🚀 Server listening at port number: ${PORT}`);
     });
   } catch (err) {
     console.error("❌ Server initialization failed:", err.message);
     console.error("Full error:", err);
-    process.exit(1); // Exit the process if database connection fails
+    process.exit(1);
   }
 };
 
-InitalizeConnection();
+initializeConnection();
