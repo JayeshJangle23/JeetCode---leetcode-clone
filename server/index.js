@@ -24,12 +24,14 @@ app.use(
   cors({
     // origin: "https://jeetcode-3qnq.onrender.com",
     origin : "https://jeet-code-leetcode-clone.vercel.app",
+    methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   })
 );
 
 app.use(express.json());
 app.use(cookieParser());
+app.options("*", cors());
 
 app.use("/user", authRouter);
 app.use("/problem", problemRouter);
