@@ -1,11 +1,11 @@
-import axios from "axios"
+import axios from "axios";
 
 const axiosClient = axios.create({
-    baseURL: import.meta.env.VITE_API_URL || 'https://jeetcode-leetcode-clone-wcsw.onrender.com',
-    withCredentials: true,
-    headers: {
-        'Content-Type': 'application/json'
-    }
+  baseURL: "https://jeetcode-leetcode-clone-wcsw.onrender.com", // ✅ NEW URL
+  withCredentials: true,
+  headers: {
+    "Content-Type": "application/json",
+  },
 });
 
 export default axiosClient;
