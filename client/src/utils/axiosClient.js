@@ -1,7 +1,7 @@
 import axios from "axios"
 
 const axiosClient = axios.create({
-    baseURL: import.meta.env.VITE_API_URL || 'https://jeetcode-3qnq.onrender.com',
+    baseURL: import.meta.env.VITE_API_URL || 'https://jeetcode-leetcode-clone-wcsw.onrender.com',
     withCredentials: true,
     headers: {
         'Content-Type': 'application/json'
